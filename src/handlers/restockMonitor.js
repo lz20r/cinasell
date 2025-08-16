@@ -155,6 +155,7 @@ class RestockMonitor {
       );
 
       for (const config of restockChannels) {
+
         try {
           const guild = this.client.guilds.cache.get(config.guildId);
           if (!guild) continue;
@@ -162,17 +163,18 @@ class RestockMonitor {
           const channel = guild.channels.cache.get(config.channelId);
           if (!channel) continue;
 
-
-          let content = "";
+          let content;
+          let allowedMentions;
           if (config.roleId) {
             content = `<@&${config.roleId}>`;
+            allowedMentions = { parse: [], roles: [String(config.roleId)] };
           }
 
           await channel.send({
-            content: content || undefined,
+            content,
             embeds: [embed],
             components: [buttonRow],
-            allowed_mentions: content && config.roleId ? { parse: ["roles"], roles: [config.roleId] } : undefined
+            ...(allowedMentions ? { allowed_mentions: allowedMentions } : {})
           });
 
           //console.log(`[RESTOCK] Notificación enviada a ${guild.name} (#${channel.name})`);
