@@ -1,0 +1,85 @@
+{
+  "not_delivered": {
+    "es": {
+      "title": "No entregado",
+      "description": "- Captura del pago (con detalles si es PayPal).\n- Envía la ID de la orden o tu correo.\n- 13 horas para hacerlo",
+      "footer": { "text": "Por favor, sigue atentamente las instrucciones." }
+    },
+    "en": {
+      "title": "Not delivered",
+      "description": "- Payment proof (include details if using PayPal).\n - Send the order ID or your email.\n- 13 hours to do it",
+      "footer": { "text": "Please follow the instructions attentively." }
+    }
+  },
+
+  "replace": {
+    "es": {
+      "title": "Reemplazo",
+      "description": "- Envía la cuenta.\n- Envía una captura del problema.\n- Envía prueba de que la cuenta fue pagada en este servidor.\n- Envía el Order ID o una captura del pago.\n- Tienes 13 horas para completarlo.",
+      "footer": { "text": "Por favor, sigue atentamente las instrucciones." }
+    },
+    "en": {
+      "title": "Replacement",
+      "description": "- Send the account.\n- Send a screenshot of the issue.\n- Provide proof that the account was paid for on this server.\n- Send the Order ID or a payment receipt screenshot.\n- You have 13 hours to complete it.",
+      "footer": { "text": "Please follow the instructions attentively." }
+    }
+  },
+
+  "tickets_messages": {
+    "es": {
+      "welcomeMessage": "𓂀 **Bienvenido al Templo de la Asistencia** 𓂀\n\nPor favor, describe tu problema en detalle para que podamos ayudarte mejor.",
+      "ticketOpened": "Se ha creado un nuevo canal para tu ticket.",
+      "buttonLabel": "Ir al canal",
+      "channelCreationFailed": "No se pudo crear el canal.",
+      "closeTicket": "Cerrar",
+      "ticketClosed": "El ticket ha sido cerrado y archivado.",
+      "openTicket": "Abrir Ticket",
+      "claimTicket": "Asumir",
+      "renameTicket": "Renombrar",
+      "escaleTicket": "Escalar Ticket"
+    },
+    "en": {
+      "welcomeMessage": "𓂀 **Welcome to the Temple of Assistance** 𓂀\n\nPlease describe your issue in detail so we can better assist you.",
+      "ticketOpened": "A new channel has been created for your ticket.",
+      "buttonLabel": "Go to channel",
+      "channelCreationFailed": "Could not create the channel.",
+      "closeTicket": "Close",
+      "ticketClosed": "The ticket has been closed and archived.",
+      "openTicket": "Open Ticket",
+      "claimTicket": "Assume",
+      "renameTicket": "Rename",
+      "escaleTicket": "Escalate Ticket"
+    }
+  },
+
+  "ticket_types": {
+    "es": {
+      "instruction": "Por favor, selecciona el tipo de ticket:",
+      "label": "¡Click Aquí!",
+      "options": [
+        { "label": "Consulta", "value": "consultation" },
+        { "label": "Soporte Técnico", "value": "support" },
+        { "label": "Reemplazo", "value": "replacement" },
+        { "label": "Aplicar equipo de soporte", "value": "postulation" },
+        { "label": "Alianza", "value": "alliance" },
+        { "label": "Problemas en tienda", "value": "store_issues" },
+        { "label": "Producto no recibido", "value": "product_not_received" },
+        { "label": "Otros", "value": "other" }
+      ]
+    },
+    "en": {
+      "instruction": "Please select the type of ticket:",
+      "label": "Click here!",
+      "options": [
+        { "label": "Consultation", "value": "consultation" },
+        { "label": "Technical Support", "value": "support" },
+        { "label": "Replacement", "value": "replacement" },
+        { "label": "Apply support team", "value": "postulation" },
+        { "label": "Alliance", "value": "alliance" },
+        { "label": "Store issues", "value": "store_issues" },
+        { "label": "Product not received", "value": "product_not_received" },
+        { "label": "Other", "value": "other" }
+      ]
+    }
+  }
+}

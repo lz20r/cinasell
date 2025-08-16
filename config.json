@@ -1,0 +1,96 @@
+{
+  "prefix": ".",
+  "owners": [
+    "1033160523044376616",
+    "502284459098505226",
+    "807579685663146004"
+  ],
+  "id": "1290746205013544991",
+  "roles": {
+    "staff": "1401988781917077556"
+  },
+  "staffSystem": {
+    "referenceServer": "1309220509279584419",
+    "servers": {
+      "1309220509279584419": {
+        "Learner": "1401975380096843929",
+        "Trial Support": "1401975567133311087",
+        "Support": "1401975693377540221",
+        "Moderator": "1397309207170125945",
+        "Junior Admin": "1401975853122060290",
+        "Admin": "1397309206117486834",
+        "Senior Admin": "1401976008743321731",
+        "Manager": "1401976170131619953",
+        "Coordinator": "1401976259956838562",
+        "Platform Admin": "1401976328860995606",
+        "Community Manager": "1401976401435037747"
+      },
+      "1401845727767822436": {
+        "Learner": "1401951173665357918",
+        "Trial Support": "1401951175544275060",
+        "Support": "1401951176370557181",
+        "Moderator": "1401951178115383296",
+        "Junior Admin": "1401951178316710103",
+        "Admin": "1401951179017162935",
+        "Senior Admin": "1401951179331862540",
+        "Manager": "1401951180313333780",
+        "Coordinator": "1401951180799873135",
+        "Platform Admin": "1401951181550391387",
+        "Community Manager": "1401951182863208460"
+      },
+      "1327796600285691935": {
+        "Learner": "1403704455207321650",
+        "Trial Support": "1403704455769227294",
+        "Support": "1403704456469811271",
+        "Moderator": "1403704456926855352",
+        "Junior Admin": "1403704457690087435",
+        "Admin": "1403704458491330653",
+        "Senior Admin": "1403704459330195538",
+        "Manager": "1403704460277973012",
+        "Coordinator": "1403704461146456075",
+        "Platform Admin": "1403704462404489359",
+        "Community Manager": "1403704463394476153"
+      }
+    },
+    "hierarchy": [
+      "Learner",
+      "Trial Support",
+      "Support",
+      "Moderator",
+      "Junior Admin",
+      "Admin",
+      "Senior Admin",
+      "Manager",
+      "Coordinator",
+      "Platform Admin",
+      "Community Manager"
+    ]
+  },
+  "channels": {
+    "reviews": "1401988507479834654"
+  },
+  "tickets": {
+    "close": "1402008727741141043",
+    "support": "1402010272545243300",
+    "alliance": "1402016495113863199",
+    "consultation": "1402150224461430936",
+    "other": "1309655027165560892",
+    "store_issues": "1403167757381533796",
+    "product_not_received": "1402012578561003731",
+    "postulation": "1402015466213478491",
+    "replacement": "1402029077258436789"
+  },
+  "emojis": {
+    "success": "",
+    "error": "",
+    "loading": "",
+    "stable": "",
+    "half": "",
+    "bad": "",
+    "back": "",
+    "home": "",
+    "delt": "",
+    "next": "",
+    "back2": ""
+  }
+}
