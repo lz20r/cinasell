@@ -329,6 +329,8 @@ module.exports = {
                     });
             };
 
+            console.log(flat);
+
             // Embed de **producto individual** (con metadatos de su factura)
             const generateItemEmbed = (flatIdx) => {
                 const { invIdx, itemIdx } = flat[flatIdx];
@@ -374,13 +376,14 @@ module.exports = {
                         { name: "📧 Email", value: invoice.email || "N/A", inline: true },
                         { name: "🌍 País", value: invoice.country_code || "N/A", inline: true },
                         { name: "📅 Fecha", value: fecha, inline: true },
-                        { name: "🏷️ Cupón", value: invoice.coupon_code || "N/A", inline: true }
+                        { name: "🏷️ Cupón", value: invoice.coupon_code || "No existe cupón", inline: true }
                     )
                     .setFooter({
                         text: `Producto ${itemIdx + 1} de ${items.length} • Factura ${invIdx + 1} de ${invoices.length}`,
                     });
-
+                
                 return embed;
+                
             };
 
             // ————————————————————————————————————————————————
