@@ -329,8 +329,6 @@ module.exports = {
                     });
             };
 
-            console.log(flat);
-
             // Embed de **producto individual** (con metadatos de su factura)
             const generateItemEmbed = (flatIdx) => {
                 const { invIdx, itemIdx } = flat[flatIdx];
@@ -381,9 +379,8 @@ module.exports = {
                     .setFooter({
                         text: `Producto ${itemIdx + 1} de ${items.length} • Factura ${invIdx + 1} de ${invoices.length}`,
                     });
-                
+
                 return embed;
-                
             };
 
             // ————————————————————————————————————————————————
