@@ -87,11 +87,11 @@ module.exports = {
       //console.log("[PRODUCTOS]  Procesando catálogo final...");
       for (let i = 0; i < allProducts.length; i++) {
         const product = allProducts[i];
-        console.log(`[PRODUCTOS]  Procesando ${i + 1}/${allProducts.length}: ${product.name} (ID: ${product.id})`);
+        //console.log(`[PRODUCTOS]  Procesando ${i + 1}/${allProducts.length}: ${product.name} (ID: ${product.id})`);
         
         if (product.variants && product.variants.length > 0) {
           // Producto con variantes
-          console.log(`[PRODUCTOS]  ${product.variants.length} variantes encontradas`);
+          //console.log(`[PRODUCTOS]  ${product.variants.length} variantes encontradas`);
           for (const variant of product.variants) {
             const uniqueId = `${product.id}-v${variant.id}`;
             
@@ -290,7 +290,7 @@ module.exports = {
           case "productos_refresh":
             // Recargar datos con la misma lógica robusta
             try {
-              console.log("[PRODUCTOS]  Actualizando catálogo completo...");
+              //console.log("[PRODUCTOS]  Actualizando catálogo completo...");
               
               // Obtener datos frescos
               const newUniqueProductsMap = new Map();
@@ -311,7 +311,7 @@ module.exports = {
               } while (newCurrentPage <= newTotalPages);
 
               const newAllProducts = Array.from(newUniqueProductsMap.values());
-              console.log(`[PRODUCTOS]  Datos actualizados: ${newAllProducts.length} productos únicos`);
+              //console.log(`[PRODUCTOS]  Datos actualizados: ${newAllProducts.length} productos únicos`);
               
               if (newAllProducts.length > 0) {
                 // Reconstruir catálogo
