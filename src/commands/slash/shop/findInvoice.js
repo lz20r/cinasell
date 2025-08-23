@@ -27,39 +27,64 @@ module.exports = {
             const id = idRaw.toLowerCase();
             const perPage = 100;
 
-            // Mapeo de precios de productos (id -> precio)
-            const productPriceMap = {};
-            // Mapeo de variantes por producto (id -> array de variantes)
-            const productVariantsMap = {};
-
-            // Helper para obtener precio real de la API
-            async function fetchProductPrices(productIds) {
-                for (const pid of productIds) {
-                    if (!productPriceMap[pid]) {
-                        try {
-                            const prod = await sellauth.getProduct(pid);
-                            // El precio puede estar en diferentes campos
-                            let price = null;
-                            if (prod?.data) {
-                                price = prod.data.price ?? prod.data.price_amount;
-                                if (price == null && prod.data.price_cents != null) price = prod.data.price_cents / 100;
-                                // Variantes
-                                if (Array.isArray(prod.data.variants)) {
-                                    productVariantsMap[pid] = prod.data.variants.map(v => ({
-                                        name: v.name || v.variant_name || "Variante",
-                                        price: v.price ?? v.price_amount ?? (v.price_cents != null ? v.price_cents / 100 : null)
-                                    }));
-                                } else {
-                                    productVariantsMap[pid] = [];
-                                }
-                            }
-                            if (price !== null && price !== undefined) {
-                                productPriceMap[pid] = Number(price);
-                            }
-                        } catch (e) {
-                            productPriceMap[pid] = null;
-                            productVariantsMap[pid] = [];
+            // --- Catálogo robusto de productos y variantes (basado en comando productos) ---
+            const uniqueProductsMap = new Map();
+            let currentPageProd = 1;
+            let totalPagesProd = 1;
+            do {
+                const response = await sellauth.getProducts(currentPageProd);
+                if (!response || !response.data) break;
+                for (const product of response.data) {
+                    if (product.id && !uniqueProductsMap.has(product.id)) {
+                        uniqueProductsMap.set(product.id, product);
+                    }
+                }
+                totalPagesProd = response.last_page || 1;
+                currentPageProd++;
+            } while (currentPageProd <= totalPagesProd);
+            const allProducts = Array.from(uniqueProductsMap.values());
+            // Catálogo final: key = `${productId}-v${variantId}` o `${productId}-single`
+            const finalCatalog = new Map();
+            for (const product of allProducts) {
+                if (product.variants && product.variants.length > 0) {
+                    for (const variant of product.variants) {
+                        const uniqueId = `${product.id}-v${variant.id}`;
+                        if (!finalCatalog.has(uniqueId)) {
+                            finalCatalog.set(uniqueId, {
+                                id: uniqueId,
+                                productId: product.id,
+                                variantId: variant.id,
+                                name: variant.name === product.name ? product.name : `${product.name} - ${variant.name}`,
+                                price: variant.price ?? product.price ?? 0,
+                                stock: variant.stock ?? 0,
+                                description: variant.description || product.description || "Sin descripción",
+                                image: product.image || (product.images?.[0]?.url) || null,
+                                path: product.path,
+                                category: product.category || "General",
+                                productName: product.name,
+                                variantName: variant.name,
+                                type: "variant"
+                            });
                         }
+                    }
+                } else {
+                    const uniqueId = `${product.id}-single`;
+                    if (!finalCatalog.has(uniqueId)) {
+                        finalCatalog.set(uniqueId, {
+                            id: uniqueId,
+                            productId: product.id,
+                            variantId: null,
+                            name: product.name,
+                            price: product.price || 0,
+                            stock: product.stock_count || product.stock || 0,
+                            description: product.description || "Sin descripción",
+                            image: product.image || (product.images?.[0]?.url) || null,
+                            path: product.path,
+                            category: product.category || "General",
+                            productName: product.name,
+                            variantName: null,
+                            type: "single"
+                        });
                     }
                 }
             }
@@ -242,9 +267,7 @@ module.exports = {
 
             const { entries, totalSpent } = buildProductsSummary(invoices);
 
-            // Obtener los IDs únicos de productos del resumen y cargar precios
-            const uniqueProductIds = Array.from(new Set(entries.map(([key]) => key.split("|")[0]).filter(pid => pid && pid !== "N/A")));
-            await fetchProductPrices(uniqueProductIds);
+            // (El catálogo robusto ya contiene todos los precios y variantes necesarios)
 
             // ————————————————————————————————————————————————
             // 5) Embeds
@@ -253,16 +276,10 @@ module.exports = {
                 const emailShown = invoices.find((f) => f.email)?.email || idRaw;
                 const lines = entries.slice(0, 15).map(([key, v], idx) => {
                     const [pid, pname] = key.split("|");
-                    const price = productPriceMap[pid];
-                    const priceTxt = price !== undefined && price !== null ? ` — 💵 ${price.toFixed(2)} €` : "";
-                    let line = `**${idx + 1}.** \`${pid}\` — **${pname}**${priceTxt} • Sales: ${v.times}`;
-                    // Mostrar variantes si existen
-                    const variants = productVariantsMap[pid] || [];
-                    if (variants.length > 0) {
-                        const variantsTxt = variants.map(va => `   - ${va.name}: ${va.price !== undefined && va.price !== null ? `${va.price.toFixed(2)} €` : "N/A"}`).join("\n");
-                        line += `\n${variantsTxt}`;
-                    }
-                    return line;
+                    // Precio base del producto (sin variante)
+                    const base = Array.from(finalCatalog.values()).find(cat => cat.productId == pid && cat.type === "single");
+                    const priceTxt = base ? ` — 💵 ${Number(base.price).toFixed(2)} €` : "";
+                    return `**${idx + 1}.** \`${pid}\` — **${pname}**${priceTxt} • Sales: ${v.times}`;
                 });
 
                 // Resumen de cupones usados
@@ -318,34 +335,23 @@ module.exports = {
                 const invoice = invoices[invIdx];
                 const items = getItemsArray(invoice);
                 const it = items[itemIdx] || {};
-                // Log avanzado: mostrar el JSON completo del ítem y la variante
-                console.log("ITEM JSON", JSON.stringify(it, null, 2));
-                // Declarar solo una vez cada variable
+
                 const pid = it.product?.id ?? it.product_id ?? "N/A";
                 const pname = it.product?.name || it.name || "Producto";
                 const vname = it.variant?.name || it.variant_name || "";
                 const qty = pickNum(it.quantity, 1) || 1;
-                const totalLine = pickNum(it.total, it.subtotal, it.amount);
-                const variantUnit = getVariantUnitPrice(it);
-                let unit = pickNum(variantUnit, it.unit_price, it.price);
-                if ((unit === null || unit === 0) && totalLine !== null && qty) {
-                    unit = totalLine / qty;
+                // Buscar precio de la variante en el catálogo robusto
+                let variantPrice = null;
+                if (vname) {
+                    const found = Array.from(finalCatalog.values()).find(cat => cat.productId == pid && cat.variantName === vname);
+                    if (found) variantPrice = found.price;
                 }
-                // Log después de todas las declaraciones
-                console.log("VARIANT DEBUG", {
-                    variant: it.variant,
-                    variantUnit,
-                    unit,
-                    totalLine,
-                    qty
-                });
-
-                const priceParts = [];
-                if (variantUnit !== null) priceParts.push(`Variante: ${variantUnit.toFixed(2)} € c/u`);
-                if (unit !== null && (variantUnit === null || unit !== variantUnit))
-                    priceParts.push(`Producto: ${unit.toFixed(2)} € c/u`);
-                if (totalLine !== null) priceParts.push(`**${totalLine.toFixed(2)} €**`);
-                const priceTxt = priceParts.length ? priceParts.join(" • ") : "—";
+                // Si no hay variante, usar precio base
+                if (variantPrice === null) {
+                    const base = Array.from(finalCatalog.values()).find(cat => cat.productId == pid && cat.type === "single");
+                    if (base) variantPrice = base.price;
+                }
+                const priceTxt = variantPrice !== null && variantPrice !== undefined ? `${Number(variantPrice).toFixed(2)} €` : "—";
 
                 const fecha = new Date(invoice.created_at).toLocaleString("es-ES", {
                     day: "numeric",
@@ -363,7 +369,7 @@ module.exports = {
                         { name: "🆔 Producto", value: `\`${pid}\``, inline: true },
                         { name: "🛒 Cantidad", value: `${qty}`, inline: true },
                         { name: "💳 Método", value: invoice.gateway || "N/A", inline: true },
-                        { name: "💰 Pago Total", value: euro(Number(invoice.paid) || 0), inline: true },
+                        { name: "💰 Precio", value: priceTxt, inline: true },
                         { name: "📌 Estado", value: formatStatus(invoice.status), inline: true },
                         { name: "📧 Email", value: invoice.email || "N/A", inline: true },
                         { name: "🌍 País", value: invoice.country_code || "N/A", inline: true },
